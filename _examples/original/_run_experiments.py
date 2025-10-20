@@ -11,13 +11,13 @@ WORKFLOWS_PATHS = [
     'image_transformer.py',
 ]
 
-ITERATIONS_PER_ALGORITHM = 2
+ITERATIONS_PER_ALGORITHM = 10
 # ALGORITHMS = ['non-uniform']
 # ALGORITHMS = ['non-uniform', 'wukong', 'uniform']
-ALGORITHMS = ['uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt', 'wukong', 'wukong-opt']
-SLAS = ['50']
+ALGORITHMS = ['wukong', 'wukong-opt', 'uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt']
+# SLAS = ['50']
 # SLAS = ['50', '75']
-# SLAS = ['50', '75', '90']
+SLAS = ['50', '75', '90']
 # ALGORITHMS = ['non-uniform-opt', 'uniform-opt']
 
 DOCKER_FAAS_GATEWAY_IP = "localhost"

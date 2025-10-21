@@ -158,7 +158,6 @@ async def get_workflows_information(
                         0,
                         0,
                         0,
-                        0,
                     )
                     for t, td in zip(dag._all_nodes.values(), task_data)
                     if td

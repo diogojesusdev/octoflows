@@ -36,7 +36,9 @@ def get_planner_from_sys_argv():
         else TaskWorkerResourceConfiguration(512)
     )
 
-    mid_resources = TaskWorkerResourceConfiguration(base_resources.memory_mb * 4) # 2GB
+    # mid_resources = TaskWorkerResourceConfiguration(base_resources.memory_mb * 4) # 2GB
+    # checking if resource contention is the issue
+    mid_resources = TaskWorkerResourceConfiguration(base_resources.memory_mb * 8) # 4GB
 
     non_uniform_resources = (
         [

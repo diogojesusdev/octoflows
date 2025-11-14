@@ -1,12 +1,12 @@
 # USAGE
 
-Workflow Examples can be found under `_examples`
+Workflow examples can be found in the `_examples` directory.
 
 ## Running an "Image Transformation" workflow
 
-Workflow Defined at: `_examples/original/image_transformer.py`. To generate an image of the a graph representation of the workflow
+The workflow is defined at `_examples/original/image_transformer.py`. To generate a graph representation of the workflow:
 
-1) Activate the Python Virtual Environment and go to the workflow folder 
+1) Activate the Python virtual environment and navigate to the workflow directory: 
 ```bash
 . activate_venv.sh
 cd _examples/original
@@ -17,18 +17,18 @@ cd _examples/original
 ```bash
 python image_transformer.py uniform
 ```
-> Note: You can see workflow progression in real-time by setting `open_dashboard=False` on the `.compute()` function that triggers the workflow
+> Note: You can monitor the workflow's progress in real time by setting `open_dashboard=False` in the `.compute()` function that triggers the workflow.
 
 3) Checking workflow metrics
-To visualize workflow metrics, you have 2 dashboards:
+To visualize workflow metrics, two dashboards are available:
 
-- **Planner Analysis Dashboard** (shows aggregated metrics across different workflows for all planners, ideal for debugging planner algorithms performance)
+- **Planner Analysis Dashboard**: Shows aggregated metrics across different workflows for all planners, which is ideal for debugging the performance of planner algorithms.
 ```bash
 cd _metadata_analysis
 streamlit run planners_analysis_dashboard.py
 ```
 
-- **Workflow Analysis Dashboard** (shows metrics for a specific workflow instances, ideal for debugging workflow performance)
+- **Workflow Analysis Dashboard**: Shows metrics for specific workflow instances, which is ideal for debugging workflow performance.
 ```bash
 cd _metadata_analysis
 streamlit run workflow_analysis_dashboard.py

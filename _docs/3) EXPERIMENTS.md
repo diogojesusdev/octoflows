@@ -1,8 +1,8 @@
 # EXPERIMENTS
 
-After configuring the environment as described in `DEPLOYMENT.md`, the set of experiments used in the paper can be ran using the Python script `_examples/original/_run_experiments.py`. Here it's possible to configure the workflows to run, SLAs to use, Planners, and number of instances for each possible combination. The script then runs the experiments sequentially. 
+After configuring the environment as described in `DEPLOYMENT.md`, the set of experiments used in the paper can be run using the Python script `_examples/original/_run_experiments.py`. This script allows you to configure the workflows to run, the SLAs to use, the Planners, and the number of instances for each possible combination. The script then runs the experiments sequentially. 
 
-> Note: Before starting a new experiment, it waits for all containers to shutdown gracefully, ensuring next workflow will experience cold starts for initial workers.
+> Note: Before starting a new experiment, the script waits for all containers to shut down gracefully, ensuring that the next workflow experiences cold starts for its initial workers.
 
 ```bash
 . activate_venv.sh
@@ -10,7 +10,7 @@ cd _examples/original
 python _run_experiments.py
 ```
 
-Afterwards, you can visualize the results using the Planners Analysis Streamlit dashboard:
+After the experiments are complete, you can visualize the results using the Planners Analysis Streamlit dashboard:
 
 ```bash
 cd _metadata_analysis

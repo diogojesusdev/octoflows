@@ -20,4 +20,4 @@ Our solution is a modular **decentralized workflow execution engine** that intro
 
 * **Performance & Efficiency:** Our evaluation shows the effectiveness of our solution, showing gains on both performance and resource usage when compared to a similar state-of-the-art solution (WUKONG).
     * **Resource-Efficient:** Our `Uniform` planner (our most resource-efficient) reduces resource consumption by **36%** and execution time by **12.6%** compared to WUKONG.
-    * **Speed-Optimized:** Our Optimized `Non-Uniform` planner (our fastest) achieves a **57.5%** reduction in makespan compared to our most resource-efficient planner (Uniform), but this performance gain requires a **114%** increase in resource consumption.
+    * **Speed-Optimized:** Our Optimized `Non-Uniform` planner (our fastest) achieves a **57.5%** reduction in makespan compared to our most resource-efficient planner (Uniform), but this performance gain requires a **113.5%** increase in resource consumption.

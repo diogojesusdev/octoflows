@@ -12,20 +12,10 @@ WORKFLOWS_PATHS = [
 ]
 
 ITERATIONS_PER_ALGORITHM = 10
-# ALGORITHMS = ['non-uniform']
-ALGORITHMS = ['uniform', 'uniform-opt']
-# ALGORITHMS = ['wukong', 'wukong-opt', 'uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt']
-# SLAS = ['50']
-# SLAS = ['50', '75']
+ALGORITHMS = ['wukong', 'wukong-opt', 'uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt']
 SLAS = ['50', '75', '90']
-# ALGORITHMS = ['non-uniform-opt', 'uniform-opt']
 
 DOCKER_FAAS_GATEWAY_IP = "localhost"
-
-montage_workload = "heavy"
-if len(sys.argv) > 1:
-    montage_workload = sys.argv[1]
-print(f"Montage workload: {montage_workload}")
 
 failed_instances = 0
 
@@ -71,10 +61,7 @@ def run_experiment(script_path: str, algorithm: str, sla: str, iteration: str, c
     script_dir = os.path.dirname(os.path.abspath(__file__))
     full_script_path = os.path.join(script_dir, script_path)
 
-    if os.path.basename(script_path) == 'montage.py':
-        cmd = [sys.executable, full_script_path, algorithm, sla, montage_workload]
-    else:
-        cmd = [sys.executable, full_script_path, algorithm, sla]
+    cmd = [sys.executable, full_script_path, algorithm, sla]
 
     percentage = (current / total) * 100 if total > 0 else 0
     

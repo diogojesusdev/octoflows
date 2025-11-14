@@ -24,5 +24,5 @@ sink: DAGTaskNode = L[0] # type: ignore
 # exit()
 
 start_time = time.time()
-result = sink.compute(dag_name="tree_reduction", config=WORKER_CONFIG, download_result=False, open_dashboard=False)
+result = sink.compute(dag_name="tree_reduction", config=WORKER_CONFIG, open_dashboard=False)
 print(f"User waited: {time.time() - start_time}s")

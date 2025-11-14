@@ -441,7 +441,7 @@ final_report = final_comprehensive_report(metrics, summary, merged_analysis)
 
 # --- Run workflow ---
 start_time = time.time()
-result = final_report.compute(dag_name="text_analysis", config=WORKER_CONFIG, download_result=False, open_dashboard=False)
+result = final_report.compute(dag_name="text_analysis", config=WORKER_CONFIG, open_dashboard=False)
 # Result keys: {list(result.keys())} |
 print(f"User waited: {time.time() - start_time:.3f}s")
 # print(f"Analysis complete - processed {result['detailed_analysis']['total_words']} words in {result['detailed_analysis']['total_segments']} segments")

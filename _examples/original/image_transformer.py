@@ -155,7 +155,7 @@ final_img = merge_chunks_grid(processed_chunks, grid_size=4)
 # final_img.visualize_dag(output_file=os.path.join("_dag_visualization", "image_transformer"), open_after=True)
 
 start_time = time.time()
-result = final_img.compute(dag_name="image_transformer", config=WORKER_CONFIG, download_result=False, open_dashboard=False)
+result = final_img.compute(dag_name="image_transformer", config=WORKER_CONFIG, open_dashboard=False)
 print(f"User waited: {time.time() - start_time:.3f}s")
 
 # _save_image(result, output_file)

@@ -16,3 +16,5 @@ After the experiments are complete, you can visualize the results using the Plan
 cd _metadata_analysis
 streamlit run planners_analysis_dashboard.py
 ```
+
+A Redis snapshot of the metrics database used to build the thesis and paper visualizations can be found in: `_metadata_analysis/snapshots/experiments_metrics_db_snapshot.rdb`.

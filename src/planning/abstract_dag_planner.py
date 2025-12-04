@@ -51,7 +51,7 @@ class AbstractDAGPlanner(WorkerExecutionLogic):
                 key=lambda x: x.memory_mb, reverse=True
             )
 
-    config: BaseConfiggg
+    config: BaseConfig
 
     @dataclass
     class PlanningTaskInfo:

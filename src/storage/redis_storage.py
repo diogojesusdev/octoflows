@@ -27,8 +27,7 @@ class SubscriptionInfo:
 class RedisStorage(storage.Storage):
     @dataclass
     class Config(storage.Storage.Config):
-        host: str
-        port: int
+        address: tuple[str, int]
         password: str
 
         def create_instance(self) -> "RedisStorage":
@@ -41,7 +40,8 @@ class RedisStorage(storage.Storage):
         self._pubsub: Optional[PubSub] = None
         self._pubsub_task: Optional[asyncio.Task] = None
         self._sub_lock = asyncio.Lock()
-        self.ARTIFICIAL_NETWORK_LATENCY_S = 0.030 # ~15 ms each way (request, response)
+        # self.ARTIFICIAL_NETWORK_LATENCY_S = 0.030 # ~15 ms each way (request, response)
+        self.ARTIFICIAL_NETWORK_LATENCY_S = 0
         # Changed to store multiple subscriptions per channel
         # Format: {channel: {subscription_id: SubscriptionInfo, ...}}
         self._channel_subscriptions: Dict[str, Dict[str, SubscriptionInfo]] = {}
@@ -59,8 +59,8 @@ class RedisStorage(storage.Storage):
         async with self._conn_lock:
             if not self._connection:
                 self._pool = ConnectionPool(
-                    host=self.redis_config.host,
-                    port=self.redis_config.port,
+                    host=self.redis_config.address[0],
+                    port=self.redis_config.address[1],
                     db=0,
                     password=self.redis_config.password,
                     decode_responses=False,

@@ -1,13 +1,13 @@
 import asyncio
 import base64
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import groupby
 import json
+import random
 import time
 import aiohttp
 import cloudpickle
 import os
-import zlib
 from typing import Any
 
 from src.dag import dag
@@ -21,8 +21,9 @@ logger = create_logger(__name__)
 class DockerWorker(Worker):
     @dataclass
     class Config(Worker.Config):
-        external_docker_gateway_address: str = "http://localhost:5000"
-        internal_docker_gateway_address: str = "http://host.docker.internal:5000"
+        external_docker_gateway_addresses: list[tuple[str, int]] = field(default_factory=list)
+        internal_docker_gateway_address = ("host.docker.internal", 5000)
+        container_monitoring_addresses: list[tuple[str, int]] = field(default_factory=list)
       
         def create_instance(self) -> "DockerWorker": 
             super().create_instance()
@@ -37,7 +38,8 @@ class DockerWorker(Worker):
     def __init__(self, config: Config):
         super().__init__(config)
         self.docker_config = config
-        self.ARTIFICIAL_NETWORK_LATENCY_S = 0.030 # ~15 ms each way (request, response)
+        # self.ARTIFICIAL_NETWORK_LATENCY_S = 0.030 # ~15 ms each way (request, response)
+        self.ARTIFICIAL_NETWORK_LATENCY_S = 0 # ~15 ms each way (request, response)
         self.MAX_DAG_SIZE_BYTES = 300 * 1024 # 300KB
         self.MAX_DAG_CACHED_RESULTS_BYTES = 250 * 1024 # 250KB
         # On linux, docker containers don't have access to host.docker.internal. They can just call localhost, on Windows they have to use host.docker.internal
@@ -81,21 +83,19 @@ class DockerWorker(Worker):
             else:
                 tasks_with_worker_id.append(subdag)
         
-        # Group tasks with specific worker_ids (existing logic)
+        # Group tasks with specific worker_ids
         tasks_grouped_by_id = {
             worker_id: list(tasks)
             for worker_id, tasks in groupby(tasks_with_worker_id, key=lambda sd: sd.root_node.worker_config.worker_id)
         }
         
-        # Create a list to store all the async tasks
         http_tasks = []
-        
-        # Define the async function for making individual HTTP requests
         async def make_worker_request(worker_id, worker_subdags):
             _worker_subdags: list[dag.SubDAG] = worker_subdags
             targetWorkerResourcesConfig = _worker_subdags[0].root_node.worker_config
-            gateway_address = self.docker_config.internal_docker_gateway_address if called_by_worker and not self.is_docker_host_linux else self.docker_config.external_docker_gateway_address
-            logger.info(f"Invoking docker gateway ({gateway_address}) | CPUs: {targetWorkerResourcesConfig.cpus} | Memory: {targetWorkerResourcesConfig.memory_mb} | Worker ID: {worker_id} | Root Tasks: {[subdag.root_node.id.get_full_id() for subdag in _worker_subdags]}")
+            gateway_address = self.docker_config.internal_docker_gateway_address if called_by_worker and not self.is_docker_host_linux else random.choice(self.docker_config.external_docker_gateway_addresses)
+
+            logger.info(f"Invoking docker gateway ({gateway_address[0]}:{gateway_address[1]}) | CPUs: {targetWorkerResourcesConfig.cpus} | Memory: {targetWorkerResourcesConfig.memory_mb} | Worker ID: {worker_id} | Root Tasks: {[subdag.root_node.id.get_full_id() for subdag in _worker_subdags]}")
             await self.metadata_storage.store_invoker_worker_startup_metrics(
                 WorkerStartupMetrics(
                     master_dag_id=_worker_subdags[0].master_dag_id,
@@ -115,7 +115,7 @@ class DockerWorker(Worker):
             
             async with aiohttp.ClientSession() as session:
                 async with await session.post(
-                    gateway_address + "/job",
+                    f"http://{gateway_address[0]}:{gateway_address[1]}" + "/job",
                     data=json.dumps({
                         "resource_configuration": base64.b64encode(cloudpickle.dumps(targetWorkerResourcesConfig)).decode('utf-8'),
                         "dag_id": _worker_subdags[0].master_dag_id,
@@ -152,12 +152,12 @@ class DockerWorker(Worker):
         """
         await self._simulate_network_latency()
 
-        gateway_address = self.docker_config.internal_docker_gateway_address if not self.is_docker_host_linux else self.docker_config.external_docker_gateway_address
+        gateway_address = self.docker_config.internal_docker_gateway_address if not self.is_docker_host_linux else random.choice(self.docker_config.external_docker_gateway_addresses)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                     # because only docker workers will make warmup requests to each other (and never the client requesting a warmup)
-                    gateway_address + "/warmup",
+                    f"http://{gateway_address}:{gateway_address[1]}" + "/warmup",
                     data=json.dumps({
                         "dag_id": dag_id,
                         "resource_configurations": base64.b64encode(cloudpickle.dumps(resource_configurations)).decode('utf-8')

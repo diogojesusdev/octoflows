@@ -132,9 +132,9 @@ class FullDAG(GenericDAG):
         wk: Worker = _wk_config.create_instance()
         
         self.dag_name = dag_name
-
+        
         #! Currently, the docker handlers needs to be running locally
-        DockerContainerUsageMonitor.start_monitoring(self.master_dag_id)
+        DockerContainerUsageMonitor.start_monitoring(self.master_dag_id, _wk_config)
 
         if wk.planner:
             predictions_provider = PredictionsProvider(len(self._all_nodes), self.master_dag_structure_hash, wk.metadata_storage)

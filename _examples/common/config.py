@@ -111,20 +111,28 @@ def get_planner_from_sys_argv():
 
 # STORAGE CONFIGS
 _REDIS_INTERMEDIATE_STORAGE_CONFIG = RedisStorage.Config(
-    host="localhost",
-    port=6379,
+    # address=("localhost", 6379), # local
+    address=("localhost", 6479), # SSH tunnel
     password="redisdevpwd123"
 )
 
 _REDIS_METADATA_STORAGE_CONFIG = RedisStorage.Config(
-    host="localhost",
-    port=6380,
+    # address=("localhost", 6380), # local
+    address=("localhost", 6480), # SSH tunnel
     password="redisdevpwd123"
 )
 
 # WORKER CONFIGS
 WORKER_CONFIG = DockerWorker.Config(
-    external_docker_gateway_address="http://localhost:5000",
+    external_docker_gateway_addresses=[
+        ("localhost", 5000),
+        ("localhost", 5001) # remote docker instance, SSH tunnel from 5000->5001 
+    ],
+    # external_docker_gateway_addresses=[("95.94.148.210", 5000), ("146.193.41.126", 5000)],
+    container_monitoring_addresses=[
+        ("localhost", 2375), # client docker instance
+        ("localhost", 2376)  # remote docker instance, SSH tunnel from 2375->2376
+    ],
     intermediate_storage_config=_REDIS_INTERMEDIATE_STORAGE_CONFIG,
     metadata_storage_config=MetadataStorage.Config(storage_config=_REDIS_METADATA_STORAGE_CONFIG),
     planner_config=get_planner_from_sys_argv()

@@ -1,3 +1,4 @@
+- Make the dashboard scripts merge data from multiple IPs/DBs
 - Capability to use multiple machines as workers
     - Implementation
         - user provides list of available Docker gateway addresses
@@ -11,8 +12,7 @@
                 solution: windows hosts always talk to self
         - Remote Ubuntu machine
             1 gateway + 2 Databases
-            Expose ports: 5000 + 2375 + 6379 + 6380
-                Use SSH tunnels?
+            Expose ports: 5000 + 6379 + 6380
     - Notes:
         - `DockerContainerUsageMonitor` class would need to receive a list of Docker API endpoints
         - warmup requests could warm a container on a diff. gateway than the task will run

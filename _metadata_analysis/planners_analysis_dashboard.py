@@ -27,9 +27,9 @@ from src.utils.timer import Timer
 from src.planning.optimizations.preload import PreLoadOptimization
 from src.planning.optimizations.prewarm import PreWarmOptimization
 
-def get_redis_connection(port: int = 6379):
+def get_redis_connection(host: str, port: int):
     return aioredis.Redis(
-        host="localhost",
+        host=host,
         port=port,
         password="redisdevpwd123",
         decode_responses=False,
@@ -363,7 +363,8 @@ async def main():
     st.title("Planning Analysis Dashboard")
     
     # Connect to both Redis instances
-    metadata_storage_conn = get_redis_connection(6380)
+    # metadata_storage_conn = get_redis_connection("localhost", 6380)
+    metadata_storage_conn = get_redis_connection("146.193.41.126", 6380)
     
     # Initialize workflow types in session state if not already loaded
     if 'workflow_types' not in st.session_state:

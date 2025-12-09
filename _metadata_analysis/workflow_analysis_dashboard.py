@@ -25,9 +25,9 @@ from src.dag_task_node import DAGTaskNode
 from src.storage.metadata.metadata_storage import MetadataStorage
 
 # Redis connection setup
-def get_redis_connection(port: int = 6379):
+def get_redis_connection(host: str, port: int):
     return redis.Redis(
-        host='localhost',
+        host=host,
         port=port,
         password='redisdevpwd123',
         decode_responses=False
@@ -139,12 +139,13 @@ def main():
     st.title("Workflow Instance Analysis Dashboard")
     
     # Connect to Redis
-    metrics_redis = get_redis_connection(6380)
+    # metrics_redis_conn = get_redis_connection("localhost", 6380)
+    metrics_redis_conn = get_redis_connection("146.193.41.126", 6380)
     
     # Get all workflows information
     if 'workflows' not in st.session_state:
         with st.spinner('Loading workflow information...'):
-            st.session_state.workflows = get_workflows_information(metrics_redis)
+            st.session_state.workflows = get_workflows_information(metrics_redis_conn)
     
     workflows = st.session_state.workflows
     
@@ -214,8 +215,8 @@ def main():
     dag = selected_dag_info.dag
     dag_submission_metrics = selected_dag_info.dag_submission_metrics
 
-    worker_startup_keys = metrics_redis.keys(f"{MetadataStorage.WORKER_STARTUP_PREFIX}*")
-    worker_startup_metrics: list[WorkerStartupMetrics] = [cloudpickle.loads(metrics_redis.get(key)) for key in worker_startup_keys] # type: ignore
+    worker_startup_keys = metrics_redis_conn.keys(f"{MetadataStorage.WORKER_STARTUP_PREFIX}*")
+    worker_startup_metrics: list[WorkerStartupMetrics] = [cloudpickle.loads(metrics_redis_conn.get(key)) for key in worker_startup_keys] # type: ignore
     total_workflow_worker_startup_time_s = sum([m.end_time_ms - m.start_time_ms for m in worker_startup_metrics if m.end_time_ms is not None]) / 1000
 
     # Collect all metrics for this DAG
@@ -232,7 +233,7 @@ def main():
     _sink_task_metrics = None
     for task_id in dag._all_nodes.keys():
         metrics_key = f"{MetadataStorage.TASK_MD_KEY_PREFIX}{task_id}+{dag.master_dag_id}"
-        metrics_data = metrics_redis.get(metrics_key)
+        metrics_data = metrics_redis_conn.get(metrics_key)
         if not metrics_data: raise Exception(f"Could not find metrics for key: {metrics_key}")
         metrics: TaskMetrics = cloudpickle.loads(metrics_data) # type: ignore
         assert metrics
@@ -277,11 +278,11 @@ def main():
     sink_task_ended_timestamp_ms = (_sink_task_metrics.started_at_timestamp_s * 1000) + (_sink_task_metrics.input_metrics.tp_total_time_waiting_for_inputs_ms or 0) + _sink_task_metrics.tp_execution_time_ms + (_sink_task_metrics.output_metrics.tp_time_ms or 0) + (_sink_task_metrics.total_invocation_time_ms or 0)
     makespan_ms = sink_task_ended_timestamp_ms - dag_submission_metrics.dag_submission_time_ms
 
-    keys = metrics_redis.keys(f'{MetadataStorage.DAG_MD_KEY_PREFIX}{dag.master_dag_id}*')
+    keys = metrics_redis_conn.keys(f'{MetadataStorage.DAG_MD_KEY_PREFIX}{dag.master_dag_id}*')
     total_time_downloading_dag_ms = 0
     dag_prepare_metrics = []
     for key in keys:
-        serialized_value = metrics_redis.get(key)
+        serialized_value = metrics_redis_conn.get(key)
         deserialized = cloudpickle.loads(serialized_value) # type: ignore
         if not isinstance(deserialized, FullDAGPrepareTime): raise Exception(f"Deserialized value is not of type TaskMetrics: {type(deserialized)}")
         total_time_downloading_dag_ms += deserialized.download_time_ms
@@ -399,7 +400,7 @@ def main():
             planned_critical_edges = set()
             try:
                 plan_key = f"{MetadataStorage.PLAN_KEY_PREFIX}{dag.master_dag_id}"
-                plan_data = metrics_redis.get(plan_key)
+                plan_data = metrics_redis_conn.get(plan_key)
                 if plan_data:
                     # Ensure we have bytes before attempting to deserialize
                     if isinstance(plan_data, bytes):
@@ -498,7 +499,7 @@ def main():
             task_node = dag._all_nodes[st.session_state.selected_task_id]
             # Try to find metrics for this task
             metrics_key = f"{MetadataStorage.TASK_MD_KEY_PREFIX}{st.session_state.selected_task_id}+{dag.master_dag_id}"
-            metrics_data = metrics_redis.get(metrics_key)
+            metrics_data = metrics_redis_conn.get(metrics_key)
             if not metrics_data: raise Exception(f"Metrics not found for key {metrics_key}")
             metrics = cloudpickle.loads(metrics_data) # type: ignore
 
@@ -549,7 +550,7 @@ def main():
             # Add planned vs observed metrics if available
             st.subheader("Planned vs Observed Metrics")
             plan_key = f"{MetadataStorage.PLAN_KEY_PREFIX}{dag.master_dag_id}"
-            plan_data = metrics_redis.get(plan_key)
+            plan_data = metrics_redis_conn.get(plan_key)
 
             if metrics and task_node:
                 try:
@@ -721,7 +722,7 @@ def main():
         # DAG Summary Stats in columns
         # Calculate predicted makespan
         plan_key = f"{MetadataStorage.PLAN_KEY_PREFIX}{dag.master_dag_id}"
-        plan_data = metrics_redis.get(plan_key)
+        plan_data = metrics_redis_conn.get(plan_key)
         plan_output: AbstractDAGPlanner.PlanOutput | None = None
         if plan_data:
             plan_output = cloudpickle.loads(plan_data) # type: ignore
@@ -1022,7 +1023,7 @@ def main():
             # Calculate total times across all critical path tasks
             for task_id in critical_nodes:
                 metrics_key = f"{MetadataStorage.TASK_MD_KEY_PREFIX}{task_id}+{dag.master_dag_id}"
-                metrics_data = metrics_redis.get(metrics_key)
+                metrics_data = metrics_redis_conn.get(metrics_key)
                 if not metrics_data:
                     continue
                     

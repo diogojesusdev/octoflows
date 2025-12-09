@@ -1,9 +1,11 @@
+- ERROR: Cannot connect to host 95.94.148.210:5000
+    Docker worker can't talk to gateway on same machine via public IP?
 - Make the dashboard scripts merge data from multiple IPs/DBs
 - Capability to use multiple machines as workers
     - Implementation
         - user provides list of available Docker gateway addresses
-        - when user delegates tasks it randomly chooses one of the gateways
-        - workers will always send requests to the gateway running on their
+        - when client delegates INITIAL tasks, it randomly chooses one of the gateways
+        - workers will send requests to random gateway
     - Setup
         - Windows machine
             1 gateway + Client program

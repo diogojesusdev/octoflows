@@ -11,25 +11,32 @@ WORKFLOWS_PATHS = [
     'image_transformer.py',
 ]
 
-ITERATIONS_PER_ALGORITHM = 10
-ALGORITHMS = ['wukong', 'wukong-opt', 'uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt']
-SLAS = ['50', '75', '90']
+# ITERATIONS_PER_ALGORITHM = 10
+ITERATIONS_PER_ALGORITHM = 1
+ALGORITHMS = ['uniform', 'non-uniform']
+# ALGORITHMS = ['wukong', 'wukong-opt', 'uniform', 'uniform-opt', 'non-uniform', 'non-uniform-opt']
+SLAS = ['50']
+# SLAS = ['50', '75', '90']
 
-DOCKER_FAAS_GATEWAY_IP = "localhost"
+DOCKER_FAAS_GATEWAY_IPS = [
+    "95.94.148.210"
+    "146.193.41.126"
+]
 
 failed_instances = 0
 
 def wait_containers_shutdown():
-    url = f"http://{DOCKER_FAAS_GATEWAY_IP}:5000/wait-containers-shutdown"
-    print("Waiting for all containers to shutdown...")
-    try:
-        response = requests.post(url)
-        if response.status_code == 200:
-            print("All containers have shutdown!")
-        else:
-            print(f"Unexpected response: {response.status_code}, {response.text}")
-    except requests.RequestException as e:
-        print(f"Error making request: {e}")
+    for gateway_ip in DOCKER_FAAS_GATEWAY_IPS:
+        url = f"http://{gateway_ip}:5000/wait-containers-shutdown"
+        print("Waiting for all containers to shutdown...")
+        try:
+            response = requests.post(url)
+            if response.status_code == 200:
+                print("All containers have shutdown!")
+            else:
+                print(f"Unexpected response: {response.status_code}, {response.text}")
+        except requests.RequestException as e:
+            print(f"Error making request: {e}")
 
 
 def kill_docker_workers():

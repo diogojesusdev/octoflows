@@ -20,6 +20,9 @@
 - BUG: Redis connection timeout sometimes from my machine
 - Test each workflow individually
 - Check metrics dashboard for each type of workflow
+- Deploy on another machine
+- Test with 2 remote machines
+- Run ALL experiments 3 times on 2 remote machines
 
 [KNOWN_ISSUES]
 - In simulation {worker_active_periods} (`abstract_dag_planner.py`) are not being calculated accuratelly

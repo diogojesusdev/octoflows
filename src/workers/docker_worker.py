@@ -46,7 +46,8 @@ class DockerWorker(Worker):
         self.is_docker_host_linux = os.getenv("HOST_OS") == "linux"
 
     async def _simulate_network_latency(self) -> None:
-        await asyncio.sleep(self.ARTIFICIAL_NETWORK_LATENCY_S)
+        if self.ARTIFICIAL_NETWORK_LATENCY_S > 0:
+            await asyncio.sleep(self.ARTIFICIAL_NETWORK_LATENCY_S)
 
     async def delegate(self, subdags: list[dag.SubDAG], fulldag: dag.FullDAG, called_by_worker: bool = True):
         '''

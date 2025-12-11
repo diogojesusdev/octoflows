@@ -128,11 +128,9 @@ WORKER_CONFIG = DockerWorker.Config(
         ("95.94.148.210", 5000), # LOCAL
         ("146.193.41.126", 5000) # REMOTE docker instance
     ],
-    # external_docker_gateway_addresses=[("95.94.148.210", 5000), ("146.193.41.126", 5000)],
     container_monitoring_addresses=[
         ("localhost", 2375), # LOCAL docker instance
-        ("localhost", 2376)  # REMOTE docker instance, SSH tunnel from 2375->2376
-        # ("146.193.41.126", 2375), # LOCAL docker instance
+        ("localhost", 2376)  # REMOTE docker instance, SSH tunnel from 2375->2376, because docker binds it on private IP
     ],
     intermediate_storage_config=_REDIS_INTERMEDIATE_STORAGE_CONFIG,
     metadata_storage_config=MetadataStorage.Config(storage_config=_REDIS_METADATA_STORAGE_CONFIG),

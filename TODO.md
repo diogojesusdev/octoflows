@@ -1,10 +1,8 @@
-- ERROR: Cannot connect to host 95.94.148.210:5000
-    Docker worker can't talk to gateway on same machine via public IP?
-- Make the dashboard scripts merge data from multiple IPs/DBs
 - Capability to use multiple machines as workers
     - Implementation
         - user provides list of available Docker gateway addresses
         - when client delegates INITIAL tasks, it randomly chooses one of the gateways
+            note: random is better than round-robin
         - workers will send requests to random gateway
     - Setup
         - Windows machine
@@ -18,6 +16,10 @@
     - Notes:
         - `DockerContainerUsageMonitor` class would need to receive a list of Docker API endpoints
         - warmup requests could warm a container on a diff. gateway than the task will run
+
+- BUG: Redis connection timeout sometimes from my machine
+- Test each workflow individually
+- Check metrics dashboard for each type of workflow
 
 [KNOWN_ISSUES]
 - In simulation {worker_active_periods} (`abstract_dag_planner.py`) are not being calculated accuratelly

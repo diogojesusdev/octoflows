@@ -53,7 +53,8 @@ class RedisStorage(storage.Storage):
         # Connection will be created lazily when first needed
 
     async def _simulate_network_latency(self) -> None:
-        await asyncio.sleep(self.ARTIFICIAL_NETWORK_LATENCY_S)
+        if self.ARTIFICIAL_NETWORK_LATENCY_S > 0:
+            await asyncio.sleep(self.ARTIFICIAL_NETWORK_LATENCY_S)
 
     async def _get_or_create_connection(self) -> Redis:
         async with self._conn_lock:

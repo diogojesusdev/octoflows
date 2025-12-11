@@ -111,14 +111,14 @@ def get_planner_from_sys_argv():
 
 # STORAGE CONFIGS
 _REDIS_INTERMEDIATE_STORAGE_CONFIG = RedisStorage.Config(
-    address=("localhost", 6379), # LOCAL
-    # address=("146.193.41.126", 6379), # REMOTE
+    # address=("localhost", 6379), # LOCAL
+    address=("146.193.41.126", 6379), # REMOTE
     password="redisdevpwd123"
 )
 
 _REDIS_METADATA_STORAGE_CONFIG = RedisStorage.Config(
-    address=("localhost", 6380), # LOCAL
-    # address=("146.193.41.126", 6380), # REMOTE
+    # address=("localhost", 6380), # LOCAL
+    address=("146.193.41.126", 6380), # REMOTE
     password="redisdevpwd123"
 )
 
@@ -126,12 +126,13 @@ _REDIS_METADATA_STORAGE_CONFIG = RedisStorage.Config(
 WORKER_CONFIG = DockerWorker.Config(
     external_docker_gateway_addresses=[
         ("95.94.148.210", 5000), # LOCAL
-        # ("146.193.41.126", 5000) # REMOTE docker instance
+        ("146.193.41.126", 5000) # REMOTE docker instance
     ],
     # external_docker_gateway_addresses=[("95.94.148.210", 5000), ("146.193.41.126", 5000)],
     container_monitoring_addresses=[
         ("localhost", 2375), # LOCAL docker instance
-        # ("localhost", 2376)  # REMOTE docker instance, SSH tunnel from 2375->2376
+        ("localhost", 2376)  # REMOTE docker instance, SSH tunnel from 2375->2376
+        # ("146.193.41.126", 2375), # LOCAL docker instance
     ],
     intermediate_storage_config=_REDIS_INTERMEDIATE_STORAGE_CONFIG,
     metadata_storage_config=MetadataStorage.Config(storage_config=_REDIS_METADATA_STORAGE_CONFIG),

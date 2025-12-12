@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
   # Synced folder example:
   # config.vm.synced_folder "../data", "/vagrant_data"
 
+  
   config.vm.provider "virtualbox" do |vb|
     vb.name = "ubuntu-24.04-vm"
     vb.gui = false
@@ -34,7 +35,6 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y curl unzip
-    # Mine
     sudo apt-get install -y graphviz redis-tools
     sudo apt-get install -y python3-pip python3-venv
 
@@ -43,14 +43,13 @@ Vagrant.configure("2") do |config|
     sh get-docker.sh
     sudo usermod -aG docker vagrant
 
-    # Clone project and install Python dependencies
+    # Install Python dependencies
     ls /octoflows
     pip install -r /octoflows/src/requirements.txt
 
-    echo "--- Configuring Docker Remote API (NEW) ---"
+    # Docker API (exposes 2375)
     mkdir -p /etc/systemd/system/docker.service.d
-
-    cat > /etc/systemd/system/docker.service.d/override.conf <<EOF
+    cp /octoflows/_docs/override.conf /etc/systemd/system/docker.service.d/override.conf
 
     # 3. Reload systemd and restart Docker to apply changes
     systemctl daemon-reload

@@ -17,9 +17,9 @@
         - `DockerContainerUsageMonitor` class would need to receive a list of Docker API endpoints
         - warmup requests could warm a container on a diff. gateway than the task will run
 
-- Run ALL experiments 2 times on 1 local + 1 remote machine
-- Check metrics dashboard for each type of workflow
-- Deploy on another machine
+- Try to automate deployment and portability using Vagrant
+- Deploy on cluster machines with Vagrant
+
 - Test with 2 remote machines
 - Run ALL experiments 3 times on 2 remote machines
 

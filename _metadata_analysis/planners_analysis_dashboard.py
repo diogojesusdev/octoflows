@@ -109,8 +109,7 @@ async def get_workflows_information(
                 plan_output: AbstractDAGPlanner.PlanOutput | None = (
                     cloudpickle.loads(plan_data) if plan_data else None
                 )
-                if plan_output is None:
-                    return None
+                if plan_output is None: return None
 
                 predicted_makespan_s = (
                     plan_output.nodes_info[

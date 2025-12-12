@@ -13,25 +13,16 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 6379, host: 6379
   config.vm.network "forwarded_port", guest: 6380, host: 6380
 
-  # Private or public networking examples:
-  # config.vm.network "private_network", ip: "192.168.33.10"
-  # config.vm.network "public_network"
-
-  # Synced folder example:
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  
   config.vm.provider "virtualbox" do |vb|
     vb.name = "ubuntu-24.04-vm"
     vb.gui = false
     vb.memory = "30720"
-    vb.cpus = 4
+    vb.cpus = 6
     vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
   end
   
   config.vm.synced_folder "./", "/octoflows"
 
-  # Provisioning: install common packages
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y curl unzip
@@ -44,7 +35,6 @@ Vagrant.configure("2") do |config|
     sudo usermod -aG docker vagrant
 
     # Install Python dependencies
-    ls /octoflows
     pip install -r /octoflows/src/requirements.txt
 
     # Docker API (exposes 2375)
